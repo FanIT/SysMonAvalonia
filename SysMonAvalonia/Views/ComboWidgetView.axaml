@@ -1,0 +1,159 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="SysMonAvalonia.Views.ComboWidgetView"
+        xmlns:i="using:Avalonia.Xaml.Interactivity"
+        xmlns:ia="using:Avalonia.Xaml.Interactions.Core"
+        xmlns:adata="clr-namespace:Avalonia.Data;assembly=Avalonia.Markup"
+        xmlns:vm="clr-namespace:SysMonAvalonia.ViewModels"
+        xmlns:lvc="using:LiveChartsCore.SkiaSharpView.Avalonia"
+        xmlns:lang="clr-namespace:SysMonAvalonia.Localization"
+        xmlns:convert="clr-namespace:SysMonAvalonia.Converters"
+        xmlns:ic="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
+        Title="ComboWidgetView" Width="360" ShowInTaskbar="False" CanResize="False"
+        SystemDecorations="None" TransparencyLevelHint="AcrylicBlur" Background="{x:Null}"
+        SizeToContent="Height" PointerPressed="InputElement_OnPointerPressed">
+  <Window.DataContext>
+      <vm:ComboWidgetViewModel />
+  </Window.DataContext>
+    <Window.Resources>
+        <convert:NetworkValueConvert x:Key="NetworkConvert" />
+        <lang:Language x:Key="Lang" />
+    </Window.Resources>
+    <Window.ContextMenu>
+        <ContextMenu>
+            <MenuItem Header="{Binding Source={StaticResource Lang}, Path=Locale.Settings}"
+                      Command="{Binding ShowSettingsCommand}"/>
+            <MenuItem Header="{Binding Source={StaticResource Lang}, Path=Locale.Close}" 
+                      Command="{Binding ShutdownCommand}" />
+        </ContextMenu>
+    </Window.ContextMenu>
+    <i:Interaction.Behaviors>
+        <ia:EventTriggerBehavior EventName="Closed">
+            <ia:InvokeCommandAction Command="{Binding ClosedCommand}" />
+        </ia:EventTriggerBehavior>
+        <ia:EventTriggerBehavior EventName="PositionChanged">
+            <ia:InvokeCommandAction Command="{Binding MoveWidgetCommand}" />
+        </ia:EventTriggerBehavior>
+    </i:Interaction.Behaviors>
+    <Grid RowDefinitions="*,*,*,*" ColumnDefinitions="*,*">
+        <Grid.Styles>
+            <Style Selector="RowDefinition">
+                <Setter Property="Height" Value="50" />
+            </Style>
+        </Grid.Styles>
+        <Rectangle Grid.Row="0" Grid.Column="0" Grid.RowSpan="4" Grid.ColumnSpan="2" />
+        <lvc:CartesianChart Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" IsHitTestVisible="False" Background="{x:Null}" 
+                            Series="{Binding CpuChartModel.Series}"
+                            XAxes="{Binding CpuChartModel.XAxis}" YAxes="{Binding CpuChartModel.YAxis}"/>
+        <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Vertical" Margin="10,0,0,0">
+            <Label Classes="ComboHeader" Content="{Binding Source={StaticResource Lang}, Path=Locale.CpuHeader}" />
+            <Label Classes="ComboContent" Content="{Binding ComboData.CpuUsedPercent, StringFormat={}{0:0}%}" />
+            <Label Classes="ComboContent" Content="{Binding ComboData.CpuTemp, StringFormat='{}{0} C°'}" />
+        </StackPanel>
+        <lvc:CartesianChart Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" IsHitTestVisible="False" Background="{x:Null}"
+                            Series="{Binding RamChartModel.Series}"
+                            XAxes="{Binding RamChartModel.XAxis}" YAxes="{Binding RamChartModel.YAxis}"/>
+        <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Vertical" Margin="10,0,0,0">
+            <Label Classes="ComboHeader" Content="{Binding Source={StaticResource Lang}, Path=Locale.RamHeader}" />
+            <StackPanel Orientation="Horizontal">
+                <Label Classes="ComboContent">
+                    <Label.Content>
+                        <adata:MultiBinding StringFormat="{}{0:0.##}/{1:0.##} {2} ({3:0}%)">
+                            <Binding Path="ComboData.RamUsed"/>
+                            <Binding Path="ComboData.RamTotal"/>
+                            <Binding Source="{StaticResource Lang}" Path="Locale.Mb"/>
+                            <Binding Path="ComboData.RamPercent"/>
+                        </adata:MultiBinding>
+                    </Label.Content>
+                </Label>
+            </StackPanel>
+        </StackPanel>
+        <lvc:CartesianChart Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" IsHitTestVisible="False" Background="{x:Null}"
+                            Series="{Binding GpuChartModel.Series}"
+                            XAxes="{Binding GpuChartModel.XAxis}" YAxes="{Binding GpuChartModel.YAxis}"/>
+        <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Vertical" Margin="10,0,0,0">
+            <Label Classes="ComboHeader" Content="{Binding Source={StaticResource Lang}, Path=Locale.GpuHeader}"/>
+			<Label Classes="ComboContent">
+                <Label.Content>
+                    <adata:MultiBinding StringFormat="{}{0}% {1} C°">
+                        <Binding Path="ComboData.GpuUsedPercent"/>
+                        <Binding Path="ComboData.GpuTemp"/>
+                    </adata:MultiBinding>
+                </Label.Content>
+            </Label>
+            <StackPanel Orientation="Horizontal">
+                <Label Classes="ComboContent">
+                    <Label.Content>
+                        <adata:MultiBinding StringFormat="{}{0}/{1} {2} ({3:0}%)">
+                            <Binding Path="ComboData.GpuUsedRam"/>
+                            <Binding Path="ComboData.GpuTotalRam"/>
+                            <Binding Source="{StaticResource Lang}" Path="Locale.Mb" />
+                            <Binding Path="ComboData.GpuUsedPercentRam"/>
+                        </adata:MultiBinding>
+                    </Label.Content>
+                </Label>
+            </StackPanel>
+        </StackPanel>
+        <lvc:CartesianChart Grid.Row="3" Grid.Column="0" IsHitTestVisible="False" Background="{x:Null}"
+                            Series="{Binding NetDownChartModel.Series}" 
+                            YAxes="{Binding NetDownChartModel.YAxis}" XAxes="{Binding NetDownChartModel.XAxis}"/>
+        <StackPanel Grid.Row="3" Grid.Column="0" Orientation="Vertical" Margin="10,0,0,0">
+           <StackPanel Orientation="Horizontal">
+               <Label Classes="ComboHeader" Name="DownHeader" Content="{Binding Source={StaticResource Lang}, Path=Locale.Network}" />
+			   <ic:Icon Value="far fa-arrow-alt-circle-down" Foreground="{Binding #DownHeader.Foreground}" 
+                        FontSize="{Binding #DownHeader.FontSize}" Margin="4,0,0,0" />
+           </StackPanel>
+           <Label Classes="ComboContent">
+				<Label.Content>
+					<adata:MultiBinding StringFormat="{}{0:0.##} {1}">
+						<Binding Path="ComboData.GetByteNet" Converter="{StaticResource NetworkConvert}"/>
+						<Binding Path="ComboData.NetUnit"/>
+					</adata:MultiBinding>
+				</Label.Content>
+			</Label>
+            <StackPanel Orientation="Horizontal">
+                <Label Classes="ComboContent" >
+                    <Label.Content>
+                        <adata:MultiBinding StringFormat="{}{0:0.##} {1}">
+                            <Binding Path="ComboData.GetTotalByteNet" Converter="{StaticResource NetworkConvert}" 
+                                     ConverterParameter="gb"/>
+                            <Binding Source="{StaticResource Lang}" Path="Locale.Gb"/>
+                        </adata:MultiBinding>
+                    </Label.Content>
+                </Label>
+            </StackPanel>
+        </StackPanel>
+        <lvc:CartesianChart Grid.Row="3" Grid.Column="1" IsHitTestVisible="False" Background="{x:Null}"
+                            Series="{Binding NetUpChartModel.Series}"
+                            YAxes="{Binding NetUpChartModel.YAxis}" XAxes="{Binding NetUpChartModel.XAxis}"/>
+        <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Vertical" Margin="10,0,0,0">
+            <StackPanel Orientation="Horizontal">
+                <Label Classes="ComboHeader" Name="UpHeader" Content="{Binding Source={StaticResource Lang}, Path=Locale.Network}" />
+                <ic:Icon Value="far fa-arrow-alt-circle-up" Foreground="{Binding #UpHeader.Foreground}"
+                         FontSize="{Binding #UpHeader.FontSize}" Margin="4,0,0,0" />
+            </StackPanel>
+            <Label Classes="ComboContent">
+                <Label.Content>
+                    <adata:MultiBinding StringFormat="{}{0:0.##} {1}">
+                        <Binding Path="ComboData.SentByteNet" Converter="{StaticResource NetworkConvert}"/>
+                        <Binding Path="ComboData.NetUnit"/>
+                    </adata:MultiBinding>
+                </Label.Content>
+            </Label>
+            <StackPanel Orientation="Horizontal">
+				<Label Classes="ComboContent" >
+                    <Label.Content>
+                        <adata:MultiBinding StringFormat="{}{0:0.##} {1}">
+                            <Binding Path="ComboData.SentTotalByteNet" Converter="{StaticResource NetworkConvert}"
+                                     ConverterParameter="gb"/>
+                            <Binding Source="{StaticResource Lang}" Path="Locale.Gb"/>
+                        </adata:MultiBinding>
+                    </Label.Content>
+                </Label>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</Window>

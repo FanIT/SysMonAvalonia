@@ -1,0 +1,112 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:adata="clr-namespace:Avalonia.Data;assembly=Avalonia.Markup"
+        xmlns:vm="clr-namespace:SysMonAvalonia.ViewModels"
+        xmlns:data="clr-namespace:SysMonAvalonia.Data"
+        xmlns:cvr="clr-namespace:SysMonAvalonia.Converters"
+        xmlns:lang="clr-namespace:SysMonAvalonia.Localization"
+        xmlns:lvc="using:LiveChartsCore.SkiaSharpView.Avalonia"
+        xmlns:i="using:Avalonia.Xaml.Interactivity"
+        xmlns:ia="using:Avalonia.Xaml.Interactions.Core"
+        mc:Ignorable="d" x:Class="SysMonAvalonia.Views.DeviceIoWidgetView" Width="360" 
+        SystemDecorations="None" TransparencyLevelHint="AcrylicBlur" Background="{x:Null}" 
+        SizeToContent="Height" ShowInTaskbar="False" Title="DeviceIoWidgetView" PointerPressed="Widget_OnPointerPressed">
+    <Window.Resources>
+        <cvr:DeviceIoValueConverter x:Key="DeviceIoValueConverter" />
+        <lang:Language x:Key="Lang" />
+    </Window.Resources>
+    <Window.DataContext>
+        <vm:DeviceIoWidgetViewModel />
+    </Window.DataContext>
+    <Window.ContextMenu>
+        <ContextMenu>
+            <MenuItem Header="{Binding Source={StaticResource Lang}, Path=Locale.Settings}"
+                      Command="{Binding ShowSettingsCommand}"/>
+            <MenuItem Header="{Binding Source={StaticResource Lang}, Path=Locale.Close}" 
+                      Command="{Binding ShutdownCommand}" />
+        </ContextMenu>
+    </Window.ContextMenu>
+	<i:Interaction.Behaviors>
+		<ia:EventTriggerBehavior EventName="Closed">
+            <ia:InvokeCommandAction Command="{Binding ClosedCommand}" />
+        </ia:EventTriggerBehavior>
+        <ia:EventTriggerBehavior EventName="PositionChanged">
+            <ia:InvokeCommandAction Command="{Binding MoveWidgetCommand}" />
+        </ia:EventTriggerBehavior>
+    </i:Interaction.Behaviors>
+    <Grid>
+        <Rectangle />
+        <ItemsRepeater Items="{Binding DeviceCollection}">
+            <ItemsRepeater.ItemTemplate>
+                <DataTemplate x:DataType="data:DeviceIoData">
+					 <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,*,Auto" Height="90">
+                         <lvc:CartesianChart Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" Grid.ColumnSpan="2" IsHitTestVisible="False"
+                                             Background="{x:Null}" Series="{Binding DeviceChart.Series}"
+                                             XAxes="{Binding DeviceChart.XAxis}" YAxes="{Binding DeviceChart.YAxis}" />
+                         <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="4,5,0,0" Classes="DeviceModel" >
+                                <TextBlock.Text>
+                                    <adata:MultiBinding StringFormat="{}{0} ({1})">
+                                        <Binding Path="Letter" />
+                                        <Binding Path="Model" />
+                                    </adata:MultiBinding>
+                                </TextBlock.Text>
+                            </TextBlock>
+                         <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal">
+                             <TextBlock Classes="DeviceSpace">
+                                 <TextBlock.Text>
+                                     <adata:MultiBinding StringFormat="{}{0}/{1} {2} ({3}%)">
+                                         <Binding Path="UsedSize" Converter="{StaticResource DeviceIoValueConverter}" />
+                                         <Binding Path="TotalSize" Converter="{StaticResource DeviceIoValueConverter}" />
+                                         <Binding Source="{StaticResource Lang}" Path="Locale.Gb" />
+                                         <Binding Path="PercentUsed" />
+                                     </adata:MultiBinding>
+                                 </TextBlock.Text>
+                             </TextBlock>
+                         </StackPanel>
+                         <Grid Grid.Column="1" Grid.Row="1" RowDefinitions="Auto,Auto,Auto,Auto" Margin="10,0,0,0"
+                               VerticalAlignment="Center">
+							 <Label Grid.Row="0" Classes="DeviceProperty" IsVisible="{Binding IsHealth}">
+								 <Label.Content>
+									 <adata:MultiBinding StringFormat="{}{0} {1}%">
+										 <Binding Source="{StaticResource Lang}" Path="Locale.Health" />
+										 <Binding Path="Health" />
+									 </adata:MultiBinding>
+								 </Label.Content>
+							 </Label>
+                             <Label Grid.Row="1" Classes="DeviceProperty" IsVisible="{Binding IsTotalWrite}">
+                                 <Label.Content>
+                                     <adata:MultiBinding StringFormat="{}{0} {1:0.##} {2}">
+                                         <Binding Source="{StaticResource Lang}" Path="Locale.Write" />
+                                         <Binding Path="TotalWrite" />
+                                         <Binding Source="{StaticResource Lang}" Path="Locale.Tb" />
+                                     </adata:MultiBinding>
+                                 </Label.Content>
+                             </Label>
+                             <Label Grid.Row="2" Classes="DeviceProperty">
+                                 <Label.Content>
+                                     <adata:MultiBinding StringFormat="{}{0} {1:0.##} {2}">
+                                         <Binding Source="{StaticResource Lang}" Path="Locale.ReadIO" />
+                                         <Binding Path="ReadIO" />
+                                         <Binding Source="{StaticResource Lang}" Path="Locale.Mbyte" />
+                                     </adata:MultiBinding>
+                                 </Label.Content>
+                             </Label>
+                             <Label Grid.Row="3" Classes="DeviceProperty">
+                                 <Label.Content>
+                                     <adata:MultiBinding StringFormat="{}{0} {1:0.##} {2}">
+                                         <Binding Source="{StaticResource Lang}" Path="Locale.WriteIO" />
+                                         <Binding Path="WriteIO" />
+                                         <Binding Source="{StaticResource Lang}" Path="Locale.Mbyte" />
+                                     </adata:MultiBinding>
+                                 </Label.Content>
+                             </Label>
+                         </Grid>
+                         <ProgressBar Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Classes="SpaceProgress" Value="{Binding PercentUsed}"/>
+                    </Grid>
+            </DataTemplate>
+        </ItemsRepeater.ItemTemplate>
+    </ItemsRepeater>
+    </Grid>
+</Window>

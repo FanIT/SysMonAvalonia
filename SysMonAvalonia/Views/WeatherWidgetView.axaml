@@ -1,0 +1,175 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:SysMonAvalonia.ViewModels"
+        xmlns:data="clr-namespace:SysMonAvalonia.Data"
+        xmlns:converters="clr-namespace:SysMonAvalonia.Converters"
+        xmlns:lang="clr-namespace:SysMonAvalonia.Localization"
+        xmlns:i="using:Avalonia.Xaml.Interactivity"
+        xmlns:ia="using:Avalonia.Xaml.Interactions.Core"
+        xmlns:ic="using:Avalonia.Xaml.Interactions.Custom"
+        xmlns:drawing="clr-namespace:System.Drawing;assembly=System.Drawing.Common"
+        mc:Ignorable="d" d:DesignWidth="360" d:DesignHeight="450"
+        x:Class="SysMonAvalonia.Views.WeatherWidgetView"
+        Title="WeatherWidget" Width="360" CanResize="False"
+        SystemDecorations="None" TransparencyLevelHint="AcrylicBlur" Background="{x:Null}"
+        ShowInTaskbar="False" SizeToContent="Height" PointerPressed="Widget_OnPointerPressed">
+    <Window.DataContext>
+        <vm:WeatherWidgetViewModel />
+    </Window.DataContext>
+    <Window.Resources>
+        <converters:BitmapValueConverter x:Key="BitmapConverter" />
+        <converters:DataValueConverter x:Key="DataConverter" />
+        <StackLayout Orientation="Horizontal" Spacing="15" x:Key="HourlyLayout" />
+		<StackLayout Orientation="Horizontal" Spacing="10" x:Key="DailyLayout" />
+		<lang:Language x:Key="Locale" />
+    </Window.Resources>
+	<Window.ContextMenu>
+		<ContextMenu>
+			<MenuItem Header="{Binding Source={StaticResource Locale}, Path=Locale.Update}"
+                          Command="{Binding UpdateCommand}" />
+            <MenuItem Header="{Binding Source={StaticResource Locale}, Path=Locale.Settings}"
+                      Command="{Binding ShowSettingsCommand}"/>
+			<MenuItem Header="{Binding Source={StaticResource Locale}, Path=Locale.Close}"
+                      Command="{Binding ShutdownCommand}" />
+		</ContextMenu>
+	</Window.ContextMenu>
+	<i:Interaction.Behaviors>
+		<ia:EventTriggerBehavior EventName="PositionChanged">
+			<ia:InvokeCommandAction Command="{Binding MoveCommand}" />
+		</ia:EventTriggerBehavior>
+	</i:Interaction.Behaviors>
+	<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto">
+		<Rectangle Grid.ColumnSpan="3" Grid.RowSpan="2" />
+		<Grid Grid.Row="0" Grid.Column="0" RowDefinitions="Auto,Auto" HorizontalAlignment="Stretch" Margin="8,8,0,5"
+              DataContext="{Binding WeatherData}">
+			<Grid Grid.Row="0" ColumnDefinitions="Auto,*">
+				<Image Grid.Column="0" Width="65" Height="65" HorizontalAlignment="Center" VerticalAlignment="Center"
+                       Source="{Binding CurrentIcon, Converter={StaticResource BitmapConverter}}"/>
+				<Grid Grid.Column="1" RowDefinitions="Auto,Auto" VerticalAlignment="Top"
+                      HorizontalAlignment="Center" Margin="0,0,0,0">
+					<TextBlock Grid.Row="0" Classes="WeatherCurrentTemp" Text="{Binding CurrentTemp, 
+							   Converter={StaticResource DataConverter}, ConverterParameter=temp}"/>
+					<StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,-8,0,0"
+                                HorizontalAlignment="Center">
+						<TextBlock Classes="WeatherMinMaxTemp"
+                                   Text="{Binding MaxTemp, Converter={StaticResource DataConverter},
+								          ConverterParameter=temp}" />
+						<TextBlock Classes="WeatherMinMaxTemp" Text="/" />
+						<TextBlock Classes="WeatherMinMaxTemp" Text="{Binding MinTemp, Converter={StaticResource DataConverter},
+								                                      ConverterParameter=temp}" />
+					</StackPanel>
+				</Grid>
+			</Grid>
+			<TextBlock Grid.Row="1" Classes="WeatherText" TextWrapping="WrapWithOverflow" HorizontalAlignment="Center"
+                       TextAlignment="Center" Text="{Binding CurrentPhase}" Width="160"/>
+		</Grid>
+		<StackPanel Grid.Row="1" Orientation="Vertical">
+			<TextBlock Classes="WeatherHeader" Text="{Binding Source={StaticResource Locale}, Path=Locale.Hourly}"
+                       HorizontalAlignment="Center" />
+			<ItemsRepeater Items="{Binding ForecastHourlyCollection}"
+                           HorizontalAlignment="Center"
+                           Layout="{StaticResource HourlyLayout}">
+				<ItemsRepeater.ItemTemplate>
+					<DataTemplate x:DataType="data:ForecastData">
+						<StackPanel Orientation="Vertical" ToolTip.Tip="{Binding Phase}">
+							<Label Classes="ForecastDateTime" Content="{Binding DateTime}" />
+							<Image Classes="ForecastIcon" Source="{Binding Icon, Converter={StaticResource BitmapConverter}}" 
+                                   VerticalAlignment="Top" Margin="0,3,0,0" />
+                            <Label Classes="ForecastTempMax" Content="{Binding TempMax, Converter={StaticResource DataConverter},
+								                                       ConverterParameter=temp}" HorizontalAlignment="Center"/>
+						</StackPanel>
+					</DataTemplate>
+				</ItemsRepeater.ItemTemplate>
+			</ItemsRepeater>
+			<TextBlock Classes="WeatherHeader" Text="{Binding Source={StaticResource Locale}, Path=Locale.Daily}"
+                       HorizontalAlignment="Center" />
+			<ItemsRepeater Items="{Binding ForecastDailyCollection}" HorizontalAlignment="Center"
+                           Layout="{StaticResource DailyLayout}">
+				<ItemsRepeater.ItemTemplate>
+					<DataTemplate x:DataType="data:ForecastData">
+						<StackPanel Orientation="Vertical" ToolTip.Tip="{Binding Phase}">
+                            <Label Classes="ForecastDateTime" Content="{Binding DateTime}" />
+							<Image Classes="ForecastIcon" Source="{Binding Icon, Converter={StaticResource BitmapConverter}}"
+                                   VerticalAlignment="Top" Margin="0,3,0,0"/>
+							<Label Classes="ForecastTempMax" Content="{Binding TempMax, Converter={StaticResource DataConverter},
+								                                       ConverterParameter=temp}" HorizontalAlignment="Center"/>
+							<Label Classes="ForecastTempMin" Content="{Binding TempMin, Converter={StaticResource DataConverter},
+								                                       ConverterParameter=temp}" HorizontalAlignment="Center"/>
+						</StackPanel>
+					</DataTemplate>
+				</ItemsRepeater.ItemTemplate>
+			</ItemsRepeater>
+		</StackPanel>
+		<StackPanel Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" HorizontalAlignment="Left" Orientation="Vertical" Margin="4,0,0,0">
+			<StackPanel.Styles>
+				<Style Selector="Label">
+					<Setter Property="Margin" Value="2,0,0,0" />
+					<Setter Property="Padding" Value="0" />
+				</Style>
+			</StackPanel.Styles>
+			<Label Classes="WeatherDetailDesc" x:Name="ApparTempDescLb" Content="{Binding Source={StaticResource Locale}, Path=Locale.ApparTempDesc}" />
+			<Label Classes="WeatherDetailDesc" x:Name="WindSpeedDescLb" Content="{Binding Source={StaticResource Locale}, Path=Locale.WindSpeedDesc}" />
+			<Label Classes="WeatherDetailDesc" x:Name="CloudCoverDescLb" Content="{Binding Source={StaticResource Locale}, Path=Locale.CloudCoverDesc}" 
+                   IsVisible="{Binding WeatherData.IsCloudyCover}"/>
+			<Label Classes="WeatherDetailDesc" x:Name="PrecipChangeDescLb" Content="{Binding Source={StaticResource Locale}, Path=Locale.ChanceOfRain}" 
+                   IsVisible="{Binding WeatherData.IsPreciptation}"/>
+			<Label Classes="WeatherDetailDesc" x:Name="HumidityDescLb" Content="{Binding Source={StaticResource Locale}, Path=Locale.HumidityDesc}" />
+			<Label Classes="WeatherDetailDesc" x:Name="PressureDescLb" Content="{Binding Source={StaticResource Locale}, Path=Locale.PressureDesc}" />
+			<Label Classes="WeatherDetailDesc" x:Name="UVIndexDescLb" Content="{Binding Source={StaticResource Locale}, Path=Locale.UVIndexDesc}" />
+			<Label Classes="WeatherDetailDesc" x:Name="SunsetDescLb" Content="{Binding Source={StaticResource Locale}, Path=Locale.SunsetDesc}" />
+			<Label Classes="WeatherDetailDesc" x:Name="SunriseDescLb" Content="{Binding Source={StaticResource Locale}, Path=Locale.SunriseDesc}" />
+        </StackPanel>
+        <StackPanel Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" HorizontalAlignment="Right"
+                    Orientation="Vertical" Margin="0,0,10,0" 
+                    DataContext="{Binding WeatherData}">
+            <StackPanel.Styles>
+                <Style Selector="Label">
+                    <Setter Property="HorizontalAlignment" Value="Right" />
+                    <Setter Property="Padding" Value="0" />
+                </Style>
+            </StackPanel.Styles>
+            <Label Classes="WeatherDetail" Content="{Binding ApparTemp, Converter={StaticResource DataConverter},
+				                                     ConverterParameter=temp}" />
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+				<Path Width="10" Height="10" Margin="0,0,3,0" Data="F1 M 0,10 L 4.998,0 L 10.046,10 L 4.998,6.436 L 0,10 Z"
+                      Stroke="{Binding #WSpeed.Foreground}" Fill="{Binding #WSpeed.Foreground}">
+					<Path.RenderTransform>
+						<RotateTransform Angle="{Binding WindDegree}" />
+                    </Path.RenderTransform>
+                </Path>
+                <Label Classes="WeatherDetail" Margin="0,0,3,0" Content="{Binding WindAbbr}" />
+                <Label Name="WSpeed" Classes="WeatherDetail" Content="{Binding WindSpeed}" />
+                <Label Classes="WeatherDetail" Content="{Binding WindUnit}" Margin="4,0,0,0" />
+            </StackPanel>
+            <Label Classes="WeatherDetail" Content="{Binding CloudCover, Converter={StaticResource DataConverter},
+				                                     ConverterParameter=percent}" IsVisible="{Binding IsCloudyCover}" />
+            <Label Classes="WeatherDetail" Content="{Binding Precipitation, Converter={StaticResource DataConverter},
+				                                     ConverterParameter=percent}" IsVisible="{Binding IsPreciptation}" />
+            <Label Classes="WeatherDetail" Content="{Binding Humidity, Converter={StaticResource DataConverter},
+				                                     ConverterParameter=percent}" />
+            <Label Classes="WeatherDetail" Content="{Binding Pressure, Converter={StaticResource DataConverter},
+				                                     ConverterParameter=pressure}" />
+            <Label Classes="WeatherDetail" Content="{Binding UVIndex, Converter={StaticResource DataConverter},
+				                                     ConverterParameter=uvindex}" />
+            <Label Classes="WeatherDetail" Content="{Binding Sunset}" />
+            <Label Classes="WeatherDetail" Content="{Binding Sunrise}" />
+        </StackPanel>
+        <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Horizontal"
+                    HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                    Margin="0,0,10,5"
+                    DataContext="{Binding WeatherData}">
+			<StackPanel Orientation="Vertical">
+				<Label Classes="WeatherDetailDesc" Padding="0" Content="{Binding Source={StaticResource Locale}, Path=Locale.CityDesc}" />
+				<Label Classes="WeatherDetailDesc" Padding="0" Content="{Binding Source={StaticResource Locale}, Path=Locale.LastUpdateDesc}" />
+            </StackPanel>
+            <StackPanel Orientation="Vertical" >
+                <Label Classes="WeatherDetail" HorizontalContentAlignment="Right" Padding="0" 
+                       Content="{Binding City}"/>
+                <Label Classes="WeatherDetail" HorizontalContentAlignment="Right" Padding="0" 
+                       Content="{Binding LastUpdate}" />
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</Window>

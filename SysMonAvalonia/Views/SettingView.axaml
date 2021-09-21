@@ -1,0 +1,138 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:adata="clr-namespace:Avalonia.Data;assembly=Avalonia.Markup"
+        xmlns:vm="clr-namespace:SysMonAvalonia.ViewModels"
+        xmlns:lang="clr-namespace:SysMonAvalonia.Localization"
+        xmlns:converter="clr-namespace:SysMonAvalonia.Converters"
+        xmlns:w="clr-namespace:Weather;assembly=Weather"
+        xmlns:n="clr-namespace:Hardware.Windows.Network;assembly=Hardware"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="SysMonAvalonia.Views.SettingView"
+        Title="SettingView" SystemDecorations="None" CanResize="False"
+        TransparencyLevelHint="AcrylicBlur" Background="{x:Null}" Width="400" Height="500"
+        WindowStartupLocation="CenterScreen">
+  <Window.DataContext>
+      <vm:SettingViewModel />
+  </Window.DataContext>
+    <Window.Resources>
+        <converter:SettingsValueConverter x:Key="SettingsValueConverter" />
+        <lang:Language x:Key="Locale" />
+    </Window.Resources>
+    <Window.Styles>
+        <Style Selector="ComboBox">
+            <Setter Property="Width" Value="170" />
+            <Setter Property="Margin" Value="50,10,0,0" />
+        </Style>
+    </Window.Styles>
+    <Grid RowDefinitions="*,Auto">
+        <Rectangle Grid.RowSpan="2" />
+        <TabControl Grid.Row="0">
+            <TabItem Header="{Binding Source={StaticResource Locale}, Path=Locale.GenTabSetting}">
+                <Grid RowDefinitions="Auto,Auto,Auto,*">
+                    <StackPanel Orientation="Vertical" Margin="0,20">
+                        <TextBlock Classes="SettingsHeader" Text="{Binding Source={StaticResource Locale}, Path=Locale.LangSetting}" />
+                        <ComboBox Items="{Binding LanguageList}" SelectedIndex="{Binding CurrentSettingData.Language,
+								  Converter={StaticResource SettingsValueConverter}, ConverterParameter=lang}" />
+                    </StackPanel>
+                    <StackPanel Grid.Row="1" Orientation="Vertical">
+                        <TextBlock Classes="SettingsHeader" Text="{Binding Source={StaticResource Locale}, Path=Locale.Themes}" />
+                        <ComboBox Items="{Binding ThemeList}" SelectedIndex="{Binding CurrentSettingData.Style,
+								  Converter={StaticResource SettingsValueConverter}, ConverterParameter=theme}" />
+                    </StackPanel>
+                    <StackPanel Grid.Row="2" Orientation="Vertical">
+                        <TextBlock Classes="SettingsHeader" Text="{Binding Source={StaticResource Locale}, Path=Locale.WidgSetting}" />
+                        <WrapPanel Orientation="Horizontal" Margin="30,0,0,0">
+                            <CheckBox Content="{Binding Source={StaticResource Locale}, Path=Locale.DiscsSetting}"
+                                      IsChecked="{Binding CurrentSettingData.DeviceIoWidget.IsStartup, Mode=TwoWay}"/>
+                            <CheckBox Content="{Binding Source={StaticResource Locale}, Path=Locale.WeatherSetting}" Margin="15,0"
+                                      IsChecked="{Binding CurrentSettingData.WeatherWidget.IsStartup, Mode=TwoWay}"/>
+                            <CheckBox Content="{Binding Source={StaticResource Locale}, Path=Locale.ComboSetting}"
+                                      IsChecked="{Binding CurrentSettingData.ComboWidget.IsStartup, Mode=TwoWay}"/>
+                        </WrapPanel>
+                    </StackPanel>
+                    <StackPanel Grid.Row="3" Orientation="Vertical" Margin="0,0,0,0">
+                        <TextBlock Classes="SettingsHeader" Text="{Binding Source={StaticResource Locale}, Path=Locale.AutostartHeaderSetting}" />
+                        <ToggleSwitch IsChecked="{Binding IsAutoStart, Mode=TwoWay}" VerticalAlignment="Top" Margin="30,0,0,0"
+                                      OnContent="{Binding Source={StaticResource Locale}, Path=Locale.AutostartTogle}"
+                                      OffContent="{Binding Source={StaticResource Locale}, Path=Locale.AutostartTogle}"/>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+            <TabItem Header="{Binding Source={StaticResource Locale}, Path=Locale.WeatherSetting}">
+                <Grid RowDefinitions="Auto,Auto,Auto,Auto">
+                    <StackPanel Orientation="Vertical" Margin="0,20">
+                        <TextBlock Classes="SettingsHeader" Text="{Binding Source={StaticResource Locale}, Path=Locale.WeatherSetting}" />
+                        <ComboBox Items="{Binding WeatherProviderList}" Name="ProviderCb"
+                                  SelectedIndex="{Binding CurrentSettingData.Provider, Converter={StaticResource SettingsValueConverter},
+								  ConverterParameter=wprovider}" />
+                    </StackPanel>
+                    <StackPanel Grid.Row="1" Orientation="Vertical" Margin="0,0,0,20" 
+                                IsVisible="{Binding #ProviderCb.SelectedIndex, Converter={StaticResource SettingsValueConverter},
+								ConverterParameter=apikey}">
+                        <TextBlock Classes="SettingsHeader" Text="{Binding Source={StaticResource Locale}, Path=Locale.ApiKeySettings}" />
+                        <TextBox Width="170" Margin="50,0,0,0" HorizontalAlignment="Left" 
+                                 Text="{Binding CurrentSettingData.WeatherApiKey, Mode=TwoWay}" />
+                    </StackPanel>
+                    <StackPanel Grid.Row="2" Orientation="Vertical">
+                        <TextBlock Classes="SettingsHeader" Text="{Binding Source={StaticResource Locale}, Path=Locale.LocationSetting}" />
+                        <TextBox Name="SearchCityTB" HorizontalAlignment="Left" Width="170" Margin="50,0,0,0"
+                                 Watermark="{Binding Source={StaticResource Locale}, Path=Locale.EnterCityWM}" 
+                                 Text="{Binding TextFind, Mode=TwoWay}"/>
+                        <Popup PlacementTarget="SearchCityTB" PlacementMode="Bottom" Width="{Binding #SearchCityTB.Width}"
+                               IsOpen="{Binding IsOpenPopup}">
+                            <Grid>
+                                <Rectangle />
+								<ListBox Background="{x:Null}" Items="{Binding CityCollection}" 
+                                         SelectedIndex="{Binding SelectCity, Mode=OneWayToSource}">
+									<ListBox.ItemTemplate>
+                                        <DataTemplate x:DataType="w:LocationData">
+                                            <TextBlock>
+                                                <TextBlock.Text>
+                                                    <adata:MultiBinding StringFormat="{}{0}, {1}">
+                                                        <Binding Path="Country" />
+                                                        <Binding Path="City" />
+                                                    </adata:MultiBinding>
+                                                </TextBlock.Text>
+                                            </TextBlock>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
+                            </Grid>
+                        </Popup>
+                    </StackPanel>
+                    <StackPanel Grid.Row="3" Orientation="Vertical" Margin="0,20,0,0">
+                        <TextBlock Classes="SettingsHeader" Text="{Binding Source={StaticResource Locale}, Path=Locale.Time}" />
+                        <NumericUpDown HorizontalAlignment="Left" Width="170" Increment="1" Minimum="1" Margin="50,0,0,0"
+                                       Value="{Binding CurrentSettingData.WeatherInterval, Mode=TwoWay}"/>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+            <TabItem Header="{Binding Source={StaticResource Locale}, Path=Locale.Network}">
+                <Grid RowDefinitions="Auto,Auto">
+                    <StackPanel Grid.Row="0" Orientation="Vertical" Margin="0,20">
+                        <TextBlock Classes="SettingsHeader" Text="{Binding Source={StaticResource Locale}, Path=Locale.Adapters}" />
+                        <ComboBox Background="{x:Null}" Items="{Binding NetworkAdapterCollection}"
+                                  SelectedIndex="{Binding CurrentSettingData.AdapterID,
+								  Converter={StaticResource SettingsValueConverter}, ConverterParameter=netadapter}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate x:DataType="n:Adapter">
+                                    <TextBlock Text="{Binding Name}" />
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
+                    <StackPanel Grid.Row="1" Orientation="Vertical">
+                        <TextBlock Classes="SettingsHeader" Text="{Binding Source={StaticResource Locale}, Path=Locale.NetUnit}" />
+                        <ComboBox Background="{x:Null}" Items="{Binding NetworkUnitList}"
+                                  SelectedIndex="{Binding CurrentSettingData.NetworkUnit, 
+								  Converter={StaticResource SettingsValueConverter}, ConverterParameter=netunit}"/>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+        </TabControl>
+        <Button Grid.Row="1" HorizontalAlignment="Right" Width="80" Margin="0,0,20,10" 
+                Content="{Binding Source={StaticResource Locale}, Path=Locale.Close}" Command="{Binding CloseCommand}" />
+    </Grid>
+</Window>

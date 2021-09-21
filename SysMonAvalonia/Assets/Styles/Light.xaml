@@ -1,0 +1,112 @@
+﻿<Styles
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:sys="clr-namespace:System;assembly=netstandard"
+    xmlns:p="clr-namespace:LiveChartsCore.SkiaSharpView.Painting;assembly=LiveChartsCore.SkiaSharpView"
+    xmlns:ss="clr-namespace:SkiaSharp;assembly=SkiaSharp">
+    <Styles.Resources>
+        <ss:SKColor x:Key="DeviceChartColor">#117dbb</ss:SKColor>
+        <p:SolidColorPaint Color="{StaticResource DeviceChartColor}" x:Key="DeviceChartFill" />
+        <ss:SKColor x:Key="CpuChartColor">#117dbb</ss:SKColor>
+        <p:SolidColorPaint Color="{StaticResource CpuChartColor}" x:Key="CpuChartFill" />
+        <ss:SKColor x:Key="RamChartColor">#632d8b</ss:SKColor>
+        <p:SolidColorPaint Color="{StaticResource RamChartColor}" x:Key="RamChartFill" />
+        <ss:SKColor x:Key="GpuChartColor">#FF0000</ss:SKColor>
+        <p:SolidColorPaint Color="{StaticResource GpuChartColor}" x:Key="GpuChartFill" />
+        <ss:SKColor x:Key="NetDownChartColor">#4f9847</ss:SKColor>
+        <p:SolidColorPaint Color="{StaticResource NetDownChartColor}" x:Key="NetDownChartFill" />
+        <ss:SKColor x:Key="NetUpChartColor">#d3772e</ss:SKColor>
+        <p:SolidColorPaint Color="{StaticResource NetUpChartColor}" x:Key="NetUpChartFill" />
+        <FontFamily x:Key="SegoeLight">/Assets/Fonts/SegoeUILight.ttf#Segoe UI</FontFamily>
+    </Styles.Resources>
+    <Style Selector="Rectangle">
+        <Setter Property="Stroke" Value="White" />
+        <Setter Property="Fill" Value="White" />
+        <Setter Property="Opacity" Value="0.8" />
+    </Style>
+    <!--          Weather Styles         -->
+    <Style Selector="TextBlock.WeatherCurrentTemp">
+        <Setter Property="FontFamily" Value="{StaticResource SegoeLight}" />
+        <Setter Property="FontSize" Value="38" />
+        <Setter Property="Foreground" Value="Black" />
+    </Style>
+    <Style Selector="TextBlock.WeatherMinMaxTemp">
+        <Setter Property="FontSize" Value="18" />
+        <Setter Property="Foreground" Value="Black" />
+    </Style>
+    <Style Selector="TextBlock.WeatherText">
+        <Setter Property="FontFamily" Value="{StaticResource SegoeLight}" />
+        <Setter Property="FontSize" Value="18" />
+        <Setter Property="Foreground" Value="Black" />
+    </Style>
+    <Style Selector="TextBlock.WeatherHeader">
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Foreground" Value="Black" />
+    </Style>
+    <Style Selector="Label.WeatherDetailDesc">
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Foreground" Value="#404040" />
+    </Style>
+    <Style Selector="Label.WeatherDetail">
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Foreground" Value="Black" />
+    </Style>
+    <Style Selector="Label.ForecastDateTime">
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Foreground" Value="Black" />
+    </Style>
+    <Style Selector="Label.ForecastTempMax">
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Foreground" Value="Black" />
+    </Style>
+    <Style Selector="Label.ForecastTempMin">
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Foreground" Value="#404040" />
+    </Style>
+    <Style Selector="Image.ForecastIcon">
+        <Setter Property="Width" Value="30" />
+        <Setter Property="Height" Value="30" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+    <!--               Devices styles                  -->
+    <Style Selector="TextBlock.DeviceModel">
+        <Setter Property="FontFamily" Value="{StaticResource SegoeLight}" />
+        <Setter Property="Foreground" Value="Black" />
+        <Setter Property="FontSize" Value="16" />
+    </Style>
+    <Style Selector="TextBlock.DeviceSpace">
+        <Setter Property="FontFamily" Value="{StaticResource SegoeLight}" />
+        <Setter Property="Foreground" Value="Black" />
+        <Setter Property="FontSize" Value="28" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Margin" Value="5,0,0,0" />
+    </Style>
+    <Style Selector="Label.DeviceProperty">
+        <Setter Property="Foreground" Value="Black" />
+        <Setter Property="FontSize" Value="11" />
+        <Setter Property="Padding" Value="0" />
+    </Style>
+    <Style Selector="ProgressBar.SpaceProgress">
+        <Setter Property="Background" Value="#404040" />
+        <Setter Property="Foreground" Value="#47aff0" />
+    </Style>
+    <!--               Combo styles                      -->
+    <Style Selector="Label.ComboHeader">
+        <Setter Property="FontFamily" Value="{StaticResource SegoeLight}" />
+        <Setter Property="Foreground" Value="Black" />
+        <Setter Property="FontSize" Value="20" />
+    </Style>
+    <Style Selector="Label.ComboContent">
+        <Setter Property="FontFamily" Value="{StaticResource SegoeLight}" />
+        <Setter Property="Foreground" Value="Black" />
+        <Setter Property="FontSize" Value="18" />
+    </Style>
+    <!--                Settings style                   -->
+    <Style Selector="TextBlock.SettingsHeader">
+        <Setter Property="FontSize" Value="30" />
+        <Setter Property="Foreground" Value="Black" />
+    </Style>
+</Styles>
