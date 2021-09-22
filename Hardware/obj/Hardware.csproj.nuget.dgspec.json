@@ -1,0 +1,126 @@
+{
+  "format": 1,
+  "restore": {
+    "D:\\GitHub\\SysMonAvalonia\\Hardware\\Hardware.csproj": {}
+  },
+  "projects": {
+    "D:\\GitHub\\SysMonAvalonia\\DeviceIOControl\\DeviceIOControl.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "D:\\GitHub\\SysMonAvalonia\\DeviceIOControl\\DeviceIOControl.csproj",
+        "projectName": "DeviceIOControl",
+        "projectPath": "D:\\GitHub\\SysMonAvalonia\\DeviceIOControl\\DeviceIOControl.csproj",
+        "packagesPath": "C:\\Users\\Evgen\\.nuget\\packages\\",
+        "outputPath": "D:\\GitHub\\SysMonAvalonia\\DeviceIOControl\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\Evgen\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net5.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net5.0": {
+            "targetAlias": "net5.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net5.0": {
+          "targetAlias": "net5.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.401\\RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "D:\\GitHub\\SysMonAvalonia\\Hardware\\Hardware.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "D:\\GitHub\\SysMonAvalonia\\Hardware\\Hardware.csproj",
+        "projectName": "Hardware",
+        "projectPath": "D:\\GitHub\\SysMonAvalonia\\Hardware\\Hardware.csproj",
+        "packagesPath": "C:\\Users\\Evgen\\.nuget\\packages\\",
+        "outputPath": "D:\\GitHub\\SysMonAvalonia\\Hardware\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\Evgen\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net5.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net5.0": {
+            "targetAlias": "net5.0",
+            "projectReferences": {
+              "D:\\GitHub\\SysMonAvalonia\\DeviceIOControl\\DeviceIOControl.csproj": {
+                "projectPath": "D:\\GitHub\\SysMonAvalonia\\DeviceIOControl\\DeviceIOControl.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net5.0": {
+          "targetAlias": "net5.0",
+          "dependencies": {
+            "LibreHardwareMonitorLib": {
+              "target": "Package",
+              "version": "[0.8.9-pre28, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.401\\RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}
