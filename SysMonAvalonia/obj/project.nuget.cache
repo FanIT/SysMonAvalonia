@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "74Jy1YOm5DX3INWZb54sAeGuDmICcVcqMALFduuUThSvzP5MMc9TFF2QYdlLE1uT/mOPj41FzFth4ARA1PZ2Mg==",
+  "dgSpecHash": "MBF/CiLl0G9Gh89vaahQNiroC2d5sQxlqL+2yj8kSFNJs8LF1AmMAR/n56ta/KGE5Te2z+9GK5ySA7/C6r+6tA==",
   "success": true,
   "projectFilePath": "D:\\GitHub\\SysMonAvalonia\\SysMonAvalonia\\SysMonAvalonia.csproj",
   "expectedPackageFiles": [
@@ -24,7 +24,7 @@
     "C:\\Users\\Evgen\\.nuget\\packages\\harfbuzzsharp.nativeassets.linux\\2.6.1.7\\harfbuzzsharp.nativeassets.linux.2.6.1.7.nupkg.sha512",
     "C:\\Users\\Evgen\\.nuget\\packages\\hidsharp\\2.1.0\\hidsharp.2.1.0.nupkg.sha512",
     "C:\\Users\\Evgen\\.nuget\\packages\\jetbrains.annotations\\10.3.0\\jetbrains.annotations.10.3.0.nupkg.sha512",
-    "C:\\Users\\Evgen\\.nuget\\packages\\librehardwaremonitorlib\\0.8.9-pre28\\librehardwaremonitorlib.0.8.9-pre28.nupkg.sha512",
+    "C:\\Users\\Evgen\\.nuget\\packages\\librehardwaremonitorlib\\0.8.9-pre29\\librehardwaremonitorlib.0.8.9-pre29.nupkg.sha512",
     "C:\\Users\\Evgen\\.nuget\\packages\\livechartscore\\2.0.0-beta.71\\livechartscore.2.0.0-beta.71.nupkg.sha512",
     "C:\\Users\\Evgen\\.nuget\\packages\\livechartscore.skiasharpview\\2.0.0-beta.71\\livechartscore.skiasharpview.2.0.0-beta.71.nupkg.sha512",
     "C:\\Users\\Evgen\\.nuget\\packages\\livechartscore.skiasharpview.avalonia\\2.0.0-beta.71\\livechartscore.skiasharpview.avalonia.2.0.0-beta.71.nupkg.sha512",

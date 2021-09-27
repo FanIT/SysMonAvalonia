@@ -100,7 +100,7 @@
           "dependencies": {
             "LibreHardwareMonitorLib": {
               "target": "Package",
-              "version": "[0.8.9-pre28, )"
+              "version": "[0.8.9-pre29, )"
             }
           },
           "imports": [

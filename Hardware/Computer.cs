@@ -15,7 +15,7 @@ namespace Hardware
         private static ISensor GpuTempSensor;
 
         private static ISensor GpuRamPercentSensor;
-        private static ISensor GpuRamUsedSenser;
+        private static ISensor GpuRamUsedSensor;
 
         public static float CPUPercent { get; private set; }
         public static float CPUTemp { get; private set; }
@@ -101,8 +101,8 @@ namespace Hardware
                         if (sensor.SensorType == SensorType.SmallData && sensor.Index == 2) GPUTotalRam = sensor.Value.Value;
                         if (sensor.SensorType == SensorType.SmallData && sensor.Index == 1)
                         {
-                            GpuRamUsedSenser = sensor;
-                            GpuRamUsedSenser.ValuesTimeWindow = TimeSpan.Zero;
+                            GpuRamUsedSensor = sensor;
+                            GpuRamUsedSensor.ValuesTimeWindow = TimeSpan.Zero;
                         }
                         if (sensor.SensorType == SensorType.Load && sensor.Index == 4)
                         {
@@ -148,23 +148,47 @@ namespace Hardware
 
         public static void Update()
         {
-            CpuPercentSensor.Hardware.Update();
-            CPUPercent = CpuPercentSensor.Value.Value;
+            try
+            {
+                CpuPercentSensor.Hardware.Update();
+                CPUPercent = CpuPercentSensor.Value.Value;
+            }
+            catch { /* ignored */ }
 
-            CpuTempSensor.Hardware.Update();
-            CPUTemp = CpuTempSensor.Value.Value;
+            try
+            {
+                CpuTempSensor.Hardware.Update();
+                CPUTemp = CpuTempSensor.Value.Value;
+            }
+            catch { /* ignored */ }
 
-            GpuPercentSensor.Hardware.Update();
-            GPUPercent = GpuPercentSensor.Value.Value;
+            try
+            {
+                GpuPercentSensor.Hardware.Update();
+                GPUPercent = GpuPercentSensor.Value.Value;
+            }
+            catch { /* ignored */ }
 
-            GpuTempSensor.Hardware.Update();
-            GPUTemp = GpuTempSensor.Value.Value;
+            try
+            {
+                GpuTempSensor.Hardware.Update();
+                GPUTemp = GpuTempSensor.Value.Value;
+            }
+            catch { /* ignored */ }
 
-            GpuRamUsedSenser.Hardware.Update();
-            GPUUsedRam = GpuRamUsedSenser.Value.Value;
+            try
+            {
+                GpuRamUsedSensor.Hardware.Update();
+                GPUUsedRam = GpuRamUsedSensor.Value.Value;
+            }
+            catch { /* ignored */ }
 
-            GpuRamPercentSensor.Hardware.Update();
-            GPUPercentRam = 100 - GpuRamPercentSensor.Value.Value;
+            try
+            {
+                GpuRamPercentSensor.Hardware.Update();
+                GPUPercentRam = 100 - GpuRamPercentSensor.Value.Value;
+            }
+            catch { /* ignored */ }
 
             RamUpdate();
         }

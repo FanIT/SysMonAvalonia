@@ -11,7 +11,7 @@
           "lib/netstandard2.0/HidSharp.dll": {}
         }
       },
-      "LibreHardwareMonitorLib/0.8.9-pre28": {
+      "LibreHardwareMonitorLib/0.8.9-pre29": {
         "type": "package",
         "dependencies": {
           "HidSharp": "2.1.0",
@@ -254,17 +254,17 @@
         "lib/netstandard2.0/HidSharp.pdb"
       ]
     },
-    "LibreHardwareMonitorLib/0.8.9-pre28": {
-      "sha512": "UIGLg07vh6LVZztfcIedZ9vaLHnPS7OlMiuzth5r0pFIRQkSh13hwGL164n+EoEZ+60SaTZ3NmMXY9ShzRW8Rg==",
+    "LibreHardwareMonitorLib/0.8.9-pre29": {
+      "sha512": "vSQD0PAWjRCMuvA+6U301BsClLJqYJNQPjBDrq/HQlkAYvgUG9bCX1mq1qrybd5wgalffnuHcvFRq2voczLR8g==",
       "type": "package",
-      "path": "librehardwaremonitorlib/0.8.9-pre28",
+      "path": "librehardwaremonitorlib/0.8.9-pre29",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "lib/net452/LibreHardwareMonitorLib.dll",
         "lib/net5.0/LibreHardwareMonitorLib.dll",
         "lib/netstandard2.0/LibreHardwareMonitorLib.dll",
-        "librehardwaremonitorlib.0.8.9-pre28.nupkg.sha512",
+        "librehardwaremonitorlib.0.8.9-pre29.nupkg.sha512",
         "librehardwaremonitorlib.nuspec"
       ]
     },
@@ -670,7 +670,7 @@
   "projectFileDependencyGroups": {
     "net5.0": [
       "DeviceIOControl >= 1.0.0",
-      "LibreHardwareMonitorLib >= 0.8.9-pre28"
+      "LibreHardwareMonitorLib >= 0.8.9-pre29"
     ]
   },
   "packageFolders": {
@@ -718,7 +718,7 @@
         "dependencies": {
           "LibreHardwareMonitorLib": {
             "target": "Package",
-            "version": "[0.8.9-pre28, )"
+            "version": "[0.8.9-pre29, )"
           }
         },
         "imports": [

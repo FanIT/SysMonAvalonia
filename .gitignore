@@ -1,0 +1,10 @@
+/.git/
+/.vs/
+/DeviceIOControl/obj/
+/DeviceIOControl/bin/
+/Hardware/obj/
+/Hardware/bin/
+/SysMonAvalonia/obj/
+/SysMonAvalonia/bin/
+/Weather/obj/
+/Weather/bin/
