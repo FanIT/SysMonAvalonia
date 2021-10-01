@@ -156,7 +156,11 @@ namespace SysMonAvalonia.Services
                 widget.Show();
             }
 
-            if (desktop.MainWindow == null) desktop.MainWindow = new DeviceIoWidgetView();
+            if (desktop.MainWindow == null)
+            {
+                desktop.MainWindow = new DeviceIoWidgetView();
+                SettingData.CurrentSetting.DeviceIoWidget.IsStartup = true;
+            }
         }
     }
 }

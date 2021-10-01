@@ -21,16 +21,16 @@ namespace SysMonAvalonia.Data
         [JsonObject(MemberSerialization.OptIn)]
         public class WidgetProperties
         {
-            [JsonProperty("IsStartup")]
+            [JsonProperty("IsStartup")] 
             public bool IsStartup { get; set; }
-            [JsonProperty("X")]
+            [JsonProperty("X")] 
             public int X { get; set; }
-            [JsonProperty("Y")]
+            [JsonProperty("Y")] 
             public int Y { get; set; }
 
             public WidgetProperties()
             {
-                IsStartup = true;
+                IsStartup = false;
                 X = 0;
                 Y = 0;
             }
@@ -44,12 +44,12 @@ namespace SysMonAvalonia.Data
         public Theme Style { get; set; }
         [JsonProperty("WeatherProvider")]
         public Providers Provider { get; set; }
-        [JsonProperty("WeatherWidget")]
-        public WidgetProperties WeatherWidget { get; set; }
-        [JsonProperty("DeviceIoWidget")]
-        public WidgetProperties DeviceIoWidget { get; set; }
-        [JsonProperty("ComboWidget")]
-        public WidgetProperties ComboWidget { get; set; }
+        [JsonProperty("WeatherWidget")] 
+        public WidgetProperties WeatherWidget { get; set; } = new();
+        [JsonProperty("DeviceIoWidget")] 
+        public WidgetProperties DeviceIoWidget { get; set; } = new();
+        [JsonProperty("ComboWidget")] 
+        public WidgetProperties ComboWidget { get; set; } = new();
         [JsonProperty("WeatherInterval")]
         public int WeatherInterval { get; set; }
         [JsonProperty("WeatherLastUpdate")]

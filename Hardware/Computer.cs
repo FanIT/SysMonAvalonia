@@ -14,7 +14,6 @@ namespace Hardware
         private static ISensor GpuPercentSensor;
         private static ISensor GpuTempSensor;
 
-        private static ISensor GpuRamPercentSensor;
         private static ISensor GpuRamUsedSensor;
 
         public static float CPUPercent { get; private set; }
@@ -104,11 +103,6 @@ namespace Hardware
                             GpuRamUsedSensor = sensor;
                             GpuRamUsedSensor.ValuesTimeWindow = TimeSpan.Zero;
                         }
-                        if (sensor.SensorType == SensorType.Load && sensor.Index == 4)
-                        {
-                            GpuRamPercentSensor = sensor;
-                            GpuRamPercentSensor.ValuesTimeWindow = TimeSpan.Zero;
-                        }
                     }
                 }
             }
@@ -182,13 +176,8 @@ namespace Hardware
                 GPUUsedRam = GpuRamUsedSensor.Value.Value;
             }
             catch { /* ignored */ }
-
-            try
-            {
-                GpuRamPercentSensor.Hardware.Update();
-                GPUPercentRam = 100 - GpuRamPercentSensor.Value.Value;
-            }
-            catch { /* ignored */ }
+            
+            GPUPercentRam = GPUUsedRam / (GPUTotalRam / 100);
 
             RamUpdate();
         }

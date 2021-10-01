@@ -14,7 +14,6 @@ namespace SysMonAvalonia.Models
 {
     public class SettingModel
     {
-        public SettingData SettingData { get; }
         public List<Adapter> NetworkAdapters
         {
             get => NetworkInfo.GetInterface();
@@ -64,20 +63,26 @@ namespace SysMonAvalonia.Models
             settingFile = Path.GetDirectoryName(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName) + @"\Settings.json";
 #endif
 
-            string settingStr = File.ReadAllText(settingFile);
+            string settingStr;
 
-            if (settingStr != string.Empty)
+            try
             {
-                SettingData.CurrentSetting = JsonConvert.DeserializeObject<SettingData>(settingStr);
-                SettingData.CurrentSetting.Culture = SettingData.CurrentSetting.Language != null
-                    ? CultureInfo.GetCultureInfo(SettingData.CurrentSetting.Language)
-                    : CultureInfo.CurrentCulture;
+                settingStr = File.ReadAllText(settingFile);
             }
-            else
+            catch
             {
                 SettingData.CurrentSetting = new();
                 SettingData.CurrentSetting.Culture = CultureInfo.CurrentCulture;
+                SettingData.CurrentSetting.Language =
+                    CultureInfo.CurrentCulture.ThreeLetterISOLanguageName.Contains("rus") ? "ru-RU" : "en-US";
+
+                return;
             }
+
+            SettingData.CurrentSetting = JsonConvert.DeserializeObject<SettingData>(settingStr);
+            SettingData.CurrentSetting.Culture = SettingData.CurrentSetting.Language != null
+                ? CultureInfo.GetCultureInfo(SettingData.CurrentSetting.Language)
+                : CultureInfo.CurrentCulture;
         }
 
         public static void Save()
@@ -88,7 +93,6 @@ namespace SysMonAvalonia.Models
 #else
             settingFile = Path.GetDirectoryName(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName) + @"\Settings.json";
 #endif
-
             File.WriteAllText(settingFile, JsonConvert.SerializeObject(JObject.FromObject(SettingData.CurrentSetting)));
         }
     }
