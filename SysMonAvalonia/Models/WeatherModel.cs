@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 using Weather.Providers;
 using SysMonAvalonia.Data;
 using SysMonAvalonia.Localization;
@@ -14,12 +15,12 @@ namespace SysMonAvalonia.Models
         public ObservableCollection<ForecastData> ForecastHourlyCollection { get; set; }
         public ObservableCollection<ForecastData> ForecastDailyCollection { get; set; }
 
-        private Weather.WeatherData? GetWeatherData()
+        private async Task<Weather.WeatherData?> GetWeatherData()
         {
             if (SettingData.CurrentSetting.Provider == Providers.None || SettingData.CurrentSetting.WeatherID == string.Empty)
                 return null;
 
-            Weather.WeatherData currentWeatherData;
+            Weather.WeatherData? currentWeatherData = null;
 
             DateTime nextUpdateDateTime = SettingData.CurrentSetting.WeatherLastUpdate.AddSeconds(SettingData.CurrentSetting.WeatherInterval);
 
@@ -27,9 +28,16 @@ namespace SysMonAvalonia.Models
             {
                 IProvider provider = GetProvider();
 
-                currentWeatherData = provider.GetCurrentWeatherData(SettingData.CurrentSetting.WeatherID,
-                                                                    SettingData.CurrentSetting.Culture,
-                                                                    SettingData.CurrentSetting.WeatherApiKey);
+                for (byte b = 0; b < 4; b++)
+                {
+                    currentWeatherData = provider.GetCurrentWeatherData(SettingData.CurrentSetting.WeatherID,
+                        SettingData.CurrentSetting.Culture,
+                        SettingData.CurrentSetting.WeatherApiKey);
+
+                    if (currentWeatherData != null) break;
+
+                    await Task.Delay(3000);
+                }
 
                 currentWeatherData?.Serialize();
 
@@ -86,9 +94,9 @@ namespace SysMonAvalonia.Models
              }
          }
 
-         public WeatherData WeatherRefresh()
+         public WeatherData? WeatherRefresh()
          {
-            Weather.WeatherData currentWeatherData = GetWeatherData();
+            Weather.WeatherData? currentWeatherData = GetWeatherData().Result;
 
             if (currentWeatherData == null) return null;
 

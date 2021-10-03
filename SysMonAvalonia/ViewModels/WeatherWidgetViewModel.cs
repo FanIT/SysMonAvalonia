@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Reactive;
 using System.Reactive.Linq;
+using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using ReactiveUI;
@@ -15,7 +16,7 @@ namespace SysMonAvalonia.ViewModels
     public class WeatherWidgetViewModel : ViewModelBase
     {
         private readonly WeatherModel _weatherModel;
-        private WeatherData _weatherData;
+        private WeatherData? _weatherData;
         private ObservableCollection<ForecastData> _forecastHourlyCollection;
         private ObservableCollection<ForecastData> _forecastDailyCollection;
 
@@ -30,7 +31,7 @@ namespace SysMonAvalonia.ViewModels
         public ReactiveCommand<Unit, Unit> UpdateCommand { get; }
         public ReactiveCommand<PixelPointEventArgs, Unit> MoveCommand { get; }
 
-        public WeatherData WeatherData
+        public WeatherData? WeatherData
         {
             get => _weatherData; 
             set => this.RaiseAndSetIfChanged(ref _weatherData, value);
@@ -73,9 +74,9 @@ namespace SysMonAvalonia.ViewModels
             return Unit.Default;
         }
 
-        private void UpdateWeather()
+        private async void UpdateWeather()
         {
-            WeatherData = _weatherModel.WeatherRefresh();
+            WeatherData = await Task.Run(() => _weatherModel.WeatherRefresh());
             ForecastHourlyCollection = _weatherModel.ForecastHourlyCollection;
             ForecastDailyCollection = _weatherModel.ForecastDailyCollection;
         }
