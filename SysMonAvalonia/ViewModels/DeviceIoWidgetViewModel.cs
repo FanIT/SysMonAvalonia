@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Reactive;
 using System.Reactive.Linq;
 using Avalonia.Controls;
-using Avalonia.Controls.ApplicationLifetimes;
 using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
 using ReactiveUI;
@@ -17,7 +15,6 @@ namespace SysMonAvalonia.ViewModels
     public class DeviceIoWidgetViewModel : ViewModelBase
     {
         private readonly DeviceIoModel _deviceIoModel;
-        private ObservableCollection<DeviceIoData> _deviceCollection;
         private readonly ChartModel _chartModel;
         private IDisposable _timer;
         
@@ -33,11 +30,7 @@ namespace SysMonAvalonia.ViewModels
         public ReactiveCommand<EventArgs, Unit> ClosedCommand { get; }
         public ReactiveCommand<PixelPointEventArgs, Unit> MoveWidgetCommand { get; }
 
-        public ObservableCollection<DeviceIoData> DeviceCollection
-        {
-            get => _deviceCollection;
-            set => this.RaiseAndSetIfChanged(ref _deviceCollection, value);
-        }
+        public ReadOnlyObservableCollection<DeviceIoData> DeviceCollection => _deviceIoModel.DeviceCollection;
 
         public ISeries[] Series
         {
@@ -86,7 +79,6 @@ namespace SysMonAvalonia.ViewModels
             if (_updCountCollection == 0)
             {
                 _deviceIoModel.UpdateDeviceCollection();
-                DeviceCollection = _deviceIoModel.DeviceCollection;
 
                 _updCountCollection = 180;
             }

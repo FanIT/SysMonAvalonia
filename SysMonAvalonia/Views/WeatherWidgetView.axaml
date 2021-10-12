@@ -21,8 +21,8 @@
     <Window.Resources>
         <converters:BitmapValueConverter x:Key="BitmapConverter" />
         <converters:DataValueConverter x:Key="DataConverter" />
-        <StackLayout Orientation="Horizontal" Spacing="15" x:Key="HourlyLayout" />
-		<StackLayout Orientation="Horizontal" Spacing="10" x:Key="DailyLayout" />
+        <StackLayout Orientation="Horizontal" Spacing="13" x:Key="HourlyLayout" />
+		<StackLayout Orientation="Horizontal" Spacing="13" x:Key="DailyLayout" />
 		<lang:Language x:Key="Locale" />
     </Window.Resources>
 	<Window.ContextMenu>

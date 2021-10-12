@@ -1,44 +1,66 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
+using System.Reactive.Linq;
 using Avalonia.Controls;
+using DynamicData;
 using Hardware.Windows.DeviceIoInfo;
 using LiveChartsCore.SkiaSharpView.Painting;
-using SkiaSharp;
+using ReactiveUI;
 using SysMonAvalonia.Data;
 
 namespace SysMonAvalonia.Models
 {
     public class DeviceIoModel : IDisposable
     {
-        public ObservableCollection<DeviceIoData> DeviceCollection { get; set; } = new();
+        private readonly SourceList<DeviceIoData> _deviceList;
+        public ReadOnlyObservableCollection<DeviceIoData> DeviceCollection;
+
+        public DeviceIoModel()
+        {
+            _deviceList = new();
+            _deviceList.Connect().ObserveOn(RxApp.MainThreadScheduler).Bind(out DeviceCollection).Subscribe();
+        }
 
         public void UpdateDeviceCollection()
         {
             if (DeviceInfo.IsUpdateDiscs())
             {
+                UpdateDeviceSpace();
+
                 List<Device> devices = DeviceInfo.LogicalDrives;
 
-                RemoveOldDeviceInCollection(devices);
+                if (_deviceList.Count > devices.Count)
+                    RemoveOldDeviceInCollection(devices);
 
                 foreach (Device dev in devices)
                 {
                     if (ExistDeviceInCollection(dev)) continue;
 
                     DeviceIoData device = new();
-                    device.Model = dev.Model.Trim(' ');
+                    device.Model = dev.Model;
                     device.Letter = dev.Letter;
                     device.DeviceChart.Fill = App.Current.FindResource("DeviceChartFill") as SolidColorPaint;
-                    DeviceCollection.Add(device);
+                    
+                    _deviceList.Add(device);
                 }
             }
         }
 
         public void UpdateDeviceSpace()
         {
-            DeviceInfo.UpdateSizeOfDiscs();
+            try
+            {
+                DeviceInfo.UpdateSizeOfDiscs();
+            }
+            catch (DriveNotFoundException)
+            {
+                UpdateDeviceCollection();
+                DeviceInfo.UpdateSizeOfDiscs();
+            }
 
-            foreach (DeviceIoData devData in DeviceCollection)
+            foreach (DeviceIoData devData in _deviceList.Items)
             {
                 foreach (Device dev in DeviceInfo.LogicalDrives)
                 {
@@ -58,7 +80,7 @@ namespace SysMonAvalonia.Models
         {
             DeviceInfo.UpdateInfoOfDiscs();
 
-            foreach (DeviceIoData devData in DeviceCollection)
+            foreach (DeviceIoData devData in _deviceList.Items)
             {
                 foreach (Device dev in DeviceInfo.LogicalDrives)
                 {
@@ -76,58 +98,58 @@ namespace SysMonAvalonia.Models
 
         public void UpdatePerformance()
         {
-            for (byte b = 0; b < DeviceCollection.Count; b++)
+            byte count = 0;
+            
+            foreach (DeviceIoData dId in _deviceList.Items)
             {
-                DeviceInfo.PerfomanceDiskUpdate(b);
+                DeviceInfo.PerfomanceDiskUpdate(count);
 
-                DeviceCollection[b].ReadIO = DeviceInfo.ReadIO;
-                DeviceCollection[b].WriteIO = DeviceInfo.WriteIO;
-                DeviceCollection[b].DeviceChart.Value = DeviceInfo.ReadIO + DeviceInfo.WriteIO;
+                dId.ReadIO = DeviceInfo.ReadIO;
+                dId.WriteIO = DeviceInfo.WriteIO;
+                dId.DeviceChart.Value = DeviceInfo.ReadIO + DeviceInfo.WriteIO;
+                
+                count++;
             }
         }
 
         private bool ExistDeviceInCollection(Device device)
         {
-            bool isExist = false;
-
-            foreach (DeviceIoData dev in DeviceCollection)
+            foreach (DeviceIoData dID in _deviceList.Items)
             {
-                if (dev.Model.Contains(device.Model) && dev.TotalSize == device.TotalSpace)
-                {
-                    isExist = true;
-                    break;
-                }
+                if (dID.Model.Contains(device.Model) && dID.TotalSize == device.TotalSpace)
+                    return true;
             }
 
-            return isExist;
+            return false;
         }
 
         private void RemoveOldDeviceInCollection(List<Device> device)
         {
-            int countCollection = DeviceCollection.Count;
+            byte index = 0;
 
-            for (byte b = 0; b < countCollection; b++)
+            foreach (DeviceIoData item in _deviceList.Items)
             {
-                bool isExist = true;
+                bool isExist = false;
 
                 foreach (Device dev in device)
                 {
-                    if (dev.Model.Contains(DeviceCollection[b].Model) && dev.TotalSpace == DeviceCollection[b].TotalSize)
-                        isExist = false;
+                    if (dev.Model.Contains(item.Model) && dev.TotalSpace == item.TotalSize)
+                    {
+                        isExist = true;
+                        break;
+                    }
                 }
 
-                if (isExist)
-                {
-                    DeviceCollection.RemoveAt(b);
-                    countCollection--;
-                }
+                if (!isExist) _deviceList.RemoveAt(index);
+
+                index++;
             }
         }
 
         public void Dispose()
         {
             DeviceInfo.Close();
-            DeviceCollection.Clear();
+            _deviceList.Dispose();
         }
     }
 }
