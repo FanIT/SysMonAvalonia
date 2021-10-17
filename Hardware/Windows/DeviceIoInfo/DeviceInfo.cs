@@ -4,74 +4,63 @@ using System.Linq;
 using System.IO;
 using DeviceIOControl;
 using DeviceIOControl.Native;
-using DeviceIOControl.Disc;
 using DeviceIOControl.Disc.Smart;
 
 namespace Hardware.Windows.DeviceIoInfo
 {
     public static class DeviceInfo
     {
-        public static float ReadIO { get; private set; }
-        public static float WriteIO { get; private set; }
+        public static float ReadIo { get; private set; }
+        public static float WriteIo { get; private set; }
 
         public static List<Device> LogicalDrives { get; }
-        private static Dictionary<string, DeviceIoControl> _deviceIoList;
         
-        private static Performance[] _perfomances;
-        private static float[] _prevReadValues;
-        private static float[] _prevWriteValues;
-
         static DeviceInfo()
         {
             LogicalDrives = new();
-            _deviceIoList = new();
         }
 
         private static void SetDiscCollection()
         {
-            LogicalDrives.Clear();
-            _deviceIoList.Clear();
+            Close();
 
             IEnumerable<LogicalDrive> logicalDevicesIo = DeviceIoControl.GetLogicalDrives();
 
+            short devIndex = 0;
+            
             foreach (LogicalDrive logical in logicalDevicesIo)
             {
                 if (logical.Type != WinApi.DRIVE.FIXED) 
                     continue;
 
-                Device device = new();
-                device.Letter = logical.Name;
+                Device device = new()
+                {
+                    Index = devIndex,
+                    Letter = logical.Name,
+                    DeviceControl = new DeviceIoControl(logical.Name)
+                };
+                device.DevicePerformance = device.DeviceControl.Disc.GetDiscPerformance();
 
                 LogicalDrives.Add(device);
-                _deviceIoList.Add(device.Letter, new DeviceIoControl(device.Letter));
+
+                devIndex++;
             }
-
-            byte index = 0;
-
-            _prevReadValues = new float[LogicalDrives.Count];
-            _prevWriteValues = new float[LogicalDrives.Count];
-            _perfomances = new Performance[LogicalDrives.Count];
-
+            
             foreach (Device dev in LogicalDrives)
             {
-                var smart = _deviceIoList[dev.Letter].Disc.Smart;
+                SmartInfoCollection smart = dev.DeviceControl.Disc.Smart;
 
-                if (smart != null) dev.Model = smart.SystemParams.ModelNumber.Trim(' ');
-                else dev.Model = new DriveInfo(dev.Letter).VolumeLabel;
+                dev.Model = smart != null ? smart.SystemParams.ModelNumber.Trim(' ') : new DriveInfo(dev.Letter).VolumeLabel;
 
                 if (dev.Model.Contains("samsung", StringComparison.OrdinalIgnoreCase)) dev.Vendor = VendorEnum.Samsung;
                 else if (dev.Model.Contains("kingston", StringComparison.OrdinalIgnoreCase)) dev.Vendor = VendorEnum.Kingston;
                 else if (dev.Model.Contains("wdc", StringComparison.OrdinalIgnoreCase)) dev.Vendor = VendorEnum.WDC;
                 else dev.Vendor = VendorEnum.Other;
                 
-                _perfomances[index] = _deviceIoList[dev.Letter].Disc.GetDiscPerformance();
+                DiscApi.DISK_PERFORMANCE diskPerformance = dev.DevicePerformance.QueryPerformanceInfo();
 
-                DiscApi.DISK_PERFORMANCE diskPerformance = _perfomances[index].QueryPerformanceInfo();
-
-                _prevReadValues[index] = diskPerformance.BytesRead;
-                _prevWriteValues[index] = diskPerformance.BytesWritten;
-
-                index++;
+                dev.PrevReadIo = diskPerformance.BytesRead;
+                dev.PrevWriteIo = diskPerformance.BytesWritten;
             }
         }
 
@@ -90,7 +79,7 @@ namespace Hardware.Windows.DeviceIoInfo
         public static void UpdateSizeOfDiscs()
         {
             if (LogicalDrives == null) SetDiscCollection();
-
+            
             foreach (Device logic in LogicalDrives)
             {
                 DriveInfo drive = new(logic.Letter);
@@ -112,54 +101,50 @@ namespace Hardware.Windows.DeviceIoInfo
         {
             if (LogicalDrives == null) SetDiscCollection();
 
-            foreach (Device logical in LogicalDrives)
+            foreach (Device dev in LogicalDrives)
             {
-                SmartInfoCollection smart = _deviceIoList[logical.Letter].Disc.Smart;
+                SmartInfoCollection smart = dev.DeviceControl.Disc.Smart;
 
-                if (smart != null)
+                if (smart == null) continue;
+
+                DiscApi.DRIVEATTRIBUTE[] driveAttributes = smart.GetAttributes();
+
+                foreach (DiscApi.DRIVEATTRIBUTE attribute in driveAttributes)
                 {
-                    DiscApi.DRIVEATTRIBUTE[] driveAttributes = smart.GetAttributes();
-
-                    foreach (DiscApi.DRIVEATTRIBUTE attribute in driveAttributes)
+                    if (dev.Vendor == VendorEnum.Samsung)
                     {
-                        if (logical.Vendor == VendorEnum.Samsung)
-                        {
-                            if (attribute.bAttrID == 177) logical.Health = attribute.bAttrValue;
-                            if (attribute.bAttrID == 241) logical.TotalWrite = attribute.RawValue / (float)int.MaxValue;
-                        }
+                        if (attribute.bAttrID == 177) dev.Health = attribute.bAttrValue;
+                        if (attribute.bAttrID == 241) dev.TotalWrite = attribute.RawValue / (float)int.MaxValue;
+                    }
 
-                        if (logical.Vendor == VendorEnum.Kingston)
-                        {
-                            if (attribute.bAttrID == 231) logical.Health = attribute.bAttrValue;
-                            if (attribute.bAttrID == 241) logical.TotalWrite = attribute.RawValue / 1024f;
-                        }
+                    if (dev.Vendor == VendorEnum.Kingston)
+                    {
+                        if (attribute.bAttrID == 231) dev.Health = attribute.bAttrValue;
+                        if (attribute.bAttrID == 241) dev.TotalWrite = attribute.RawValue / 1024f;
                     }
                 }
             }
         }
 
-        public static void PerfomanceDiskUpdate(byte index)
+        public static void PerfomanceDiskUpdate(short index)
         {
-            DiscApi.DISK_PERFORMANCE dISK_PERFORMANCE = _perfomances[index].QueryPerformanceInfo();
+            DiscApi.DISK_PERFORMANCE dIskPerformance = LogicalDrives[index].DevicePerformance.QueryPerformanceInfo();
 
-            ReadIO = (dISK_PERFORMANCE.BytesRead - _prevReadValues[index]) / 1000000;
-            WriteIO = (dISK_PERFORMANCE.BytesWritten - _prevWriteValues[index]) / 1000000;
+            ReadIo = (dIskPerformance.BytesRead - LogicalDrives[index].PrevReadIo) / 1000000;
+            WriteIo = (dIskPerformance.BytesWritten - LogicalDrives[index].PrevWriteIo) / 1000000;
 
-            _prevReadValues[index] = dISK_PERFORMANCE.BytesRead;
-            _prevWriteValues[index] = dISK_PERFORMANCE.BytesWritten;
+            LogicalDrives[index].PrevReadIo = dIskPerformance.BytesRead;
+            LogicalDrives[index].PrevWriteIo = dIskPerformance.BytesWritten;
         }
 
         public static void Close()
         {
-            foreach (Performance performance in _perfomances)
+            foreach (Device dev in LogicalDrives)
             {
-                performance?.Dispose();
+                dev.Dispose();
             }
-
-            foreach (DeviceIoControl device in _deviceIoList.Values)
-            {
-                device.Dispose();
-            }
+            
+            LogicalDrives.Clear();
         }
     }
 }

@@ -18,6 +18,8 @@ namespace SysMonAvalonia.Data
         private float _readIO;
         private readonly ChartModel _chartModel = new();
 
+        public short Index { get; set; }
+
         public string Model
         {
             get => _model;

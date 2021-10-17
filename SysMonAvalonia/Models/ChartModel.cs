@@ -16,7 +16,7 @@ namespace SysMonAvalonia.Models
         public ISeries[] Series { get; set; }
         public Axis[] XAxis { get; set; }
         public Axis[] YAxis { get; set; }
-        public SolidColorPaint Fill { 
+        public SolidColorPaint? Fill { 
             set => _lineSeries.Fill = value;
         }
         public double Value
