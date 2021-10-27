@@ -29,8 +29,6 @@ namespace SysMonAvalonia.Models
         {
             if (DeviceInfo.IsUpdateDiscs())
             {
-                UpdateDeviceSpace();
-
                 List<Device> devices = DeviceInfo.LogicalDrives;
 
                 if (_deviceList.Count > devices.Count)
@@ -110,7 +108,9 @@ namespace SysMonAvalonia.Models
             {
                 if (!device.Any(dev => dev.Model.Contains(item.Model) && dev.TotalSpace == item.TotalSize))
                     _deviceList.RemoveAt(index);
-                
+
+                item.Index = index;
+
                 index++;
             }
         }

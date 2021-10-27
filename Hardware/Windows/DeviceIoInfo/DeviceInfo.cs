@@ -39,41 +39,38 @@ namespace Hardware.Windows.DeviceIoInfo
                     Letter = logical.Name,
                     DeviceControl = new DeviceIoControl(logical.Name)
                 };
+
+                device.Model = device.DeviceControl.Disc.Smart == null ? new DriveInfo(logical.Name).VolumeLabel : 
+                    device.DeviceControl.Disc.Smart.SystemParams.ModelNumber.Trim(' ');
+
+                if (device.Model.Contains("samsung", StringComparison.OrdinalIgnoreCase)) 
+                    device.Vendor = VendorEnum.Samsung;
+                else if (device.Model.Contains("kingston", StringComparison.OrdinalIgnoreCase)) 
+                    device.Vendor = VendorEnum.Kingston;
+                else if (device.Model.Contains("wdc", StringComparison.OrdinalIgnoreCase)) 
+                    device.Vendor = VendorEnum.WDC;
+                else 
+                    device.Vendor = VendorEnum.Other;
+
                 device.DevicePerformance = device.DeviceControl.Disc.GetDiscPerformance();
+                device.PrevReadIo = device.DevicePerformance.QueryPerformanceInfo().BytesRead;
+                device.PrevWriteIo = device.DevicePerformance.QueryPerformanceInfo().BytesWritten;
+                device.TotalSpace = new DriveInfo(logical.Name).TotalSize;
 
                 LogicalDrives.Add(device);
 
                 devIndex++;
             }
-            
-            foreach (Device dev in LogicalDrives)
-            {
-                SmartInfoCollection smart = dev.DeviceControl.Disc.Smart;
-
-                dev.Model = smart != null ? smart.SystemParams.ModelNumber.Trim(' ') : new DriveInfo(dev.Letter).VolumeLabel;
-
-                if (dev.Model.Contains("samsung", StringComparison.OrdinalIgnoreCase)) dev.Vendor = VendorEnum.Samsung;
-                else if (dev.Model.Contains("kingston", StringComparison.OrdinalIgnoreCase)) dev.Vendor = VendorEnum.Kingston;
-                else if (dev.Model.Contains("wdc", StringComparison.OrdinalIgnoreCase)) dev.Vendor = VendorEnum.WDC;
-                else dev.Vendor = VendorEnum.Other;
-                
-                DiscApi.DISK_PERFORMANCE diskPerformance = dev.DevicePerformance.QueryPerformanceInfo();
-
-                dev.PrevReadIo = diskPerformance.BytesRead;
-                dev.PrevWriteIo = diskPerformance.BytesWritten;
-            }
         }
 
         public static bool IsUpdateDiscs()
         {
-            if (LogicalDrives.Count != DeviceIoControl.GetLogicalDrives().Count())
-            {
-                SetDiscCollection();
+            if (LogicalDrives.Count == DeviceIoControl.GetLogicalDrives().Count()) return false;
+            
+            SetDiscCollection();
 
-                return true;
-            }
+            return true;
 
-            return false;
         }
 
         public static void UpdateSizeOfDiscs()
