@@ -57,11 +57,11 @@ namespace SysMonAvalonia.Models
             if (SettingData.CurrentSetting != null) return;
 
             string settingFile;
-#if DEBUG
+/*#if DEBUG
             settingFile = AppContext.BaseDirectory + @"\Settings.json";
-#else
+#else*/
             settingFile = Path.GetDirectoryName(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName) + @"\Settings.json";
-#endif
+//#endif
 
             string settingStr;
 
@@ -88,11 +88,11 @@ namespace SysMonAvalonia.Models
         public static void Save()
         {
             string settingFile;
-#if DEBUG
+/*#if DEBUG
             settingFile = AppContext.BaseDirectory + @"\Settings.json";
-#else
+#else*/
             settingFile = Path.GetDirectoryName(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName) + @"\Settings.json";
-#endif
+//#endif
             File.WriteAllText(settingFile, JsonConvert.SerializeObject(JObject.FromObject(SettingData.CurrentSetting)));
         }
     }

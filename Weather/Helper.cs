@@ -1,18 +1,21 @@
 ﻿using System;
 using System.Net;
 using System.Net.Http;
+using System.Threading.Tasks;
+using NLog;
 
 namespace Weather
 {
     static class Helper
     {
-        public static string GetNetContent(string url)
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
+        public static async Task<string> GetNetContent(string url)
         {
             string content = null;
 
             using (HttpClientHandler handler = new())
             {
-
                 if (handler.SupportsAutomaticDecompression) handler.AutomaticDecompression = DecompressionMethods.GZip |
                                                                                              DecompressionMethods.Deflate;
 
@@ -22,7 +25,9 @@ namespace Weather
                     client.Timeout = TimeSpan.FromSeconds(6);
                     client.DefaultRequestHeaders.AcceptEncoding.ParseAdd("gzip");
 
-                    try { content = client.GetStringAsync(url).Result; } catch { }
+                    try { content = await client.GetStringAsync(url); }
+                    catch (Exception ex)
+                    { Logger.Error(ex, $"HttpClient: {ex.Message}"); }
                 }
             }
 

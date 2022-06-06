@@ -13,7 +13,7 @@ namespace Weather.Providers
 
         public WeatherData GetCurrentWeatherData(string id, CultureInfo culture, string apiKey)
         {
-            string result = Helper.GetNetContent(string.Format(UrlWeatherForecast, id, culture.TwoLetterISOLanguageName));
+            string result = Helper.GetNetContent(string.Format(UrlWeatherForecast, id, culture.TwoLetterISOLanguageName)).Result;
 
             XDocument xdoc;
 
@@ -138,7 +138,7 @@ namespace Weather.Providers
         {
             List<LocationData> locationList = new();
 
-            string result = Helper.GetNetContent(string.Format(UrlLocation, query, culture.TwoLetterISOLanguageName));
+            string result = Helper.GetNetContent(string.Format(UrlLocation, query, culture.TwoLetterISOLanguageName)).Result;
 
             XElement xdoc;
 

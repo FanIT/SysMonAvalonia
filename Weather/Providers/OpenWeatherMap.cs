@@ -12,7 +12,7 @@ namespace Weather.Providers
 
         public List<LocationData> GetLocation(string query, CultureInfo culture, string apiKey)
         {
-            string response = Helper.GetNetContent(string.Format(LocationUrl, query, apiKey));
+            string response = Helper.GetNetContent(string.Format(LocationUrl, query, apiKey)).Result;
 
             JArray cityList;
 
@@ -49,7 +49,7 @@ namespace Weather.Providers
             string lat = id.Substring(0, id.IndexOf(";", StringComparison.Ordinal) - 1);
             string lon = id.Substring(id.IndexOf(";", StringComparison.Ordinal) + 1, id.Length - (id.IndexOf(";", StringComparison.Ordinal) + 1));
 
-            string response = Helper.GetNetContent(string.Format(WeatherUrl, lat, lon, apiKey, culture.TwoLetterISOLanguageName, "metric"));
+            string response = Helper.GetNetContent(string.Format(WeatherUrl, lat, lon, apiKey, culture.TwoLetterISOLanguageName, "metric")).Result;
 
             dynamic current;
             dynamic hourly;

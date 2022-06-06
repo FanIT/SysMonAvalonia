@@ -39,11 +39,14 @@
 		<ia:EventTriggerBehavior EventName="PositionChanged">
 			<ia:InvokeCommandAction Command="{Binding MoveCommand}" />
 		</ia:EventTriggerBehavior>
+		<ia:EventTriggerBehavior EventName="Closing">
+			<ia:InvokeCommandAction Command="{Binding ClosingCommand}" />
+		</ia:EventTriggerBehavior>
 	</i:Interaction.Behaviors>
 	<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto">
 		<Rectangle Grid.ColumnSpan="3" Grid.RowSpan="2" />
 		<Grid Grid.Row="0" Grid.Column="0" RowDefinitions="Auto,Auto" HorizontalAlignment="Stretch" Margin="8,8,0,5"
-              DataContext="{Binding WeatherData}">
+              DataContext="{Binding CurrentWeather}">
 			<Grid Grid.Row="0" ColumnDefinitions="Auto,*">
 				<Image Grid.Column="0" Width="65" Height="65" HorizontalAlignment="Center" VerticalAlignment="Center"
                        Source="{Binding CurrentIcon, Converter={StaticResource BitmapConverter}}"/>
@@ -123,7 +126,7 @@
         </StackPanel>
         <StackPanel Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" HorizontalAlignment="Right"
                     Orientation="Vertical" Margin="0,0,10,0" 
-                    DataContext="{Binding WeatherData}">
+                    DataContext="{Binding CurrentWeather}">
             <StackPanel.Styles>
                 <Style Selector="Label">
                     <Setter Property="HorizontalAlignment" Value="Right" />
@@ -159,7 +162,7 @@
         <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Horizontal"
                     HorizontalAlignment="Right" VerticalAlignment="Bottom"
                     Margin="0,0,10,5"
-                    DataContext="{Binding WeatherData}">
+                    DataContext="{Binding CurrentWeather}">
 			<StackPanel Orientation="Vertical">
 				<Label Classes="WeatherDetailDesc" Padding="0" Content="{Binding Source={StaticResource Locale}, Path=Locale.CityDesc}" />
 				<Label Classes="WeatherDetailDesc" Padding="0" Content="{Binding Source={StaticResource Locale}, Path=Locale.LastUpdateDesc}" />

@@ -31,8 +31,8 @@
         </ContextMenu>
     </Window.ContextMenu>
     <i:Interaction.Behaviors>
-        <ia:EventTriggerBehavior EventName="Closed">
-            <ia:InvokeCommandAction Command="{Binding ClosedCommand}" />
+        <ia:EventTriggerBehavior EventName="Closing">
+            <ia:InvokeCommandAction Command="{Binding ClosingCommand}" />
         </ia:EventTriggerBehavior>
         <ia:EventTriggerBehavior EventName="PositionChanged">
             <ia:InvokeCommandAction Command="{Binding MoveWidgetCommand}" />

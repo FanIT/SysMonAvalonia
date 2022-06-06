@@ -12,7 +12,7 @@
         xmlns:ia="using:Avalonia.Xaml.Interactions.Core"
         mc:Ignorable="d" x:Class="SysMonAvalonia.Views.DeviceIoWidgetView" Width="360" 
         SystemDecorations="None" TransparencyLevelHint="AcrylicBlur" Background="{x:Null}" 
-        SizeToContent="Height" ShowInTaskbar="False" Title="DeviceIoWidgetView" PointerPressed="Widget_OnPointerPressed">
+        SizeToContent="Height" ShowInTaskbar="False" Name="DeviceIo" Title="DeviceIoWidgetView" PointerPressed="Widget_OnPointerPressed">
     <Window.Resources>
         <cvr:DeviceIoValueConverter x:Key="DeviceIoValueConverter" />
         <lang:Language x:Key="Lang" />
@@ -29,10 +29,10 @@
         </ContextMenu>
     </Window.ContextMenu>
 	<i:Interaction.Behaviors>
-		<ia:EventTriggerBehavior EventName="Closed">
-            <ia:InvokeCommandAction Command="{Binding ClosedCommand}" />
+		<ia:EventTriggerBehavior EventName="Closing">
+            <ia:InvokeCommandAction Command="{Binding ClosingCommand}" />
         </ia:EventTriggerBehavior>
-        <ia:EventTriggerBehavior EventName="PositionChanged">
+        <ia:EventTriggerBehavior EventName="PositionChanged" SourceObject="{Binding #DeviceIo}">
             <ia:InvokeCommandAction Command="{Binding MoveWidgetCommand}" />
         </ia:EventTriggerBehavior>
     </i:Interaction.Behaviors>

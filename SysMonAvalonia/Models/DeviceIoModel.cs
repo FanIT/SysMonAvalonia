@@ -117,8 +117,8 @@ namespace SysMonAvalonia.Models
 
         public void Dispose()
         {
-            DeviceInfo.Close();
             _deviceList.Dispose();
+            DeviceInfo.Close();
         }
     }
 }

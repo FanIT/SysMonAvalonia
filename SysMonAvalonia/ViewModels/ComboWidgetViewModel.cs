@@ -1,14 +1,13 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Reactive;
 using System.Reactive.Linq;
 using Avalonia.Controls;
-using Avalonia.Controls.ApplicationLifetimes;
 using LiveChartsCore.SkiaSharpView.Painting;
 using ReactiveUI;
 using SysMonAvalonia.Models;
 using SysMonAvalonia.Data;
 using SysMonAvalonia.Services;
+using NLog;
 
 namespace SysMonAvalonia.ViewModels
 {
@@ -33,12 +32,15 @@ namespace SysMonAvalonia.ViewModels
 
         public ReactiveCommand<Unit, Unit> ShutdownCommand { get; } = ReactiveCommand.Create(() => AppService.ShutdownApp() );
 
-        public ReactiveCommand<EventArgs, Unit> ClosedCommand { get; }
+        public ReactiveCommand<EventArgs, Unit> ClosingCommand { get; }
 
         public ReactiveCommand<PixelPointEventArgs, Unit> MoveWidgetCommand { get; } = ReactiveCommand.Create<PixelPointEventArgs>(e =>
         {
-            SettingData.CurrentSetting.ComboWidget.X = e.Point.X;
-            SettingData.CurrentSetting.ComboWidget.Y = e.Point.Y;
+            if (e != null)
+            {
+                SettingData.CurrentSetting.ComboWidget.X = e.Point.X;
+                SettingData.CurrentSetting.ComboWidget.Y = e.Point.Y;
+            }
         });
 
         public ComboWidgetViewModel()
@@ -73,10 +75,10 @@ namespace SysMonAvalonia.ViewModels
             _timer = Observable.Timer(TimeSpan.Zero, TimeSpan.FromSeconds(1))
                 .Subscribe(x => _comboModel.ComputerDataUpdate());
 
-            ClosedCommand = ReactiveCommand.Create<EventArgs>(e =>
+            ClosingCommand = ReactiveCommand.Create<EventArgs>(e =>
             {
-                _comboModel.Dispose();
                 _timer.Dispose();
+                _comboModel.Dispose();
             });
         }
     }

@@ -9,9 +9,8 @@ namespace SysMonAvalonia.Models
 {
     public class ChartModel
     {
-        private int _index = 0;
-        private ObservableCollection<ObservablePoint> _observablePoints;
-        private LineSeries<ObservablePoint> _lineSeries;
+        private ObservableCollection<ObservableValue> _observablePoints;
+        private LineSeries<ObservableValue> _lineSeries;
 
         public ISeries[] Series { get; set; }
         public Axis[] XAxis { get; set; }
@@ -21,7 +20,7 @@ namespace SysMonAvalonia.Models
         }
         public double Value
         {
-            set => AddPoint(value);
+            set =>  AddPoint(value);
         }
         
         public ChartModel()
@@ -30,7 +29,7 @@ namespace SysMonAvalonia.Models
 
             FillPoints();
 
-            _lineSeries = new LineSeries<ObservablePoint>
+            _lineSeries = new LineSeries<ObservableValue>
             {
                 Values = _observablePoints,
                 Stroke = null,
@@ -61,22 +60,21 @@ namespace SysMonAvalonia.Models
         private void AddPoint(double point)
         {
             if (point > YAxis[0].MaxLimit) YAxis[0].MaxLimit = point;
-
-            _observablePoints.Add(new ObservablePoint(_index++, point));
+                        
+            _observablePoints.Add(new ObservableValue(point));
             _observablePoints.RemoveAt(0);
         }
 
         public void ClearPoints()
         {
             _observablePoints.Clear();
-            _index = 0;
         }
 
         public void FillPoints(double point = 0)
         {
-            for (; _index < 30; _index++)
+            for (byte b = 0; b < 60; b++)
             {
-                _observablePoints.Add(new ObservablePoint(_index, point));
+                _observablePoints.Add(new ObservableValue(point));
             }
         }
     }

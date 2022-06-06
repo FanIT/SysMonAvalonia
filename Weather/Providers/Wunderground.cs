@@ -26,7 +26,7 @@ namespace Weather.Providers
 
             try
             {
-                string json = Helper.GetNetContent(string.Format(ADL_WEATHER_URL, lng, id));
+                string json = Helper.GetNetContent(string.Format(ADL_WEATHER_URL, lng, id)).Result;
                 json = ParserFixerJson(json);
                 
                 jsonObject = JObject.Parse(json);
@@ -141,7 +141,7 @@ namespace Weather.Providers
 
         public List<LocationData> GetLocation(string query, CultureInfo culture, string apiKey)
         {
-            string result = Helper.GetNetContent(string.Format(ADL_LOCATION_URL, query, culture.TwoLetterISOLanguageName));
+            string result = Helper.GetNetContent(string.Format(ADL_LOCATION_URL, query, culture.TwoLetterISOLanguageName)).Result;
 
             XElement xdoc;
 

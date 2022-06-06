@@ -27,7 +27,7 @@ namespace SysMonAvalonia.ViewModels
         public ReactiveCommand<Unit, Unit> ShowSettingsCommand { get; } =
             ReactiveCommand.Create(() => AppService.ShowSettings());
 
-        public ReactiveCommand<EventArgs, Unit> ClosedCommand { get; }
+        public ReactiveCommand<EventArgs, Unit> ClosingCommand { get; }
         public ReactiveCommand<PixelPointEventArgs, Unit> MoveWidgetCommand { get; }
 
         public ReadOnlyObservableCollection<DeviceIoData> DeviceCollection => _deviceIoModel.DeviceCollection;
@@ -61,12 +61,16 @@ namespace SysMonAvalonia.ViewModels
             
             MoveWidgetCommand = ReactiveCommand.Create<PixelPointEventArgs>(e =>
             {
-                SettingData.CurrentSetting.DeviceIoWidget.X = e.Point.X;
-                SettingData.CurrentSetting.DeviceIoWidget.Y = e.Point.Y;
+                if (e != null)
+                {
+                    SettingData.CurrentSetting.DeviceIoWidget.X = e.Point.X;
+                    SettingData.CurrentSetting.DeviceIoWidget.Y = e.Point.Y;
+                }
             });
                 
-            ClosedCommand = ReactiveCommand.Create<EventArgs, Unit>(e =>
+            ClosingCommand = ReactiveCommand.Create<EventArgs, Unit>(e =>
             {
+                _timer?.Dispose();
                 _deviceIoModel.Dispose();
                 return Unit.Default;
             });

@@ -12,7 +12,7 @@ namespace Weather.Providers
 
         public WeatherData GetCurrentWeatherData(string id, CultureInfo culture, string apiKey)
         {
-            string json = Helper.GetNetContent(string.Format(ForecastUrl, apiKey, id, culture.TwoLetterISOLanguageName));
+            string json = Helper.GetNetContent(string.Format(ForecastUrl, apiKey, id, culture.TwoLetterISOLanguageName)).Result;
 
             dynamic jObject;
 
@@ -93,7 +93,7 @@ namespace Weather.Providers
 
         public List<LocationData> GetLocation(string query, CultureInfo culture, string apiKey)
         {
-            string json = Helper.GetNetContent(string.Format(LocationUrl, apiKey, query));
+            string json = Helper.GetNetContent(string.Format(LocationUrl, apiKey, query)).Result;
 
             dynamic jArray;
 
